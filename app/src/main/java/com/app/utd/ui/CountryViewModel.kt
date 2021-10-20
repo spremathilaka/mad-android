@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CountryViewModel(private val countryRepository: CountryRepository) : ViewModel() {
 
@@ -50,19 +51,20 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
                 }
                 .flowOn(Dispatchers.Default)
                 .collect { result ->
-                    mutableViewState.update(isLoading = false, data = result)
+                    withContext(Dispatchers.Main){
+                        mutableViewState.update(isLoading = false, data = result)
+                    }
                 }
         }
     }
-}
+    class Factory(private val countryRepository: CountryRepository) :
+        ViewModelProvider.Factory {
 
-class CountryViewModelFactory(private val countryRepository: CountryRepository) :
-    ViewModelProvider.Factory {
-
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CountryViewModel::class.java)) {
-            return CountryViewModel(countryRepository) as T
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(CountryViewModel::class.java)) {
+                return CountryViewModel(countryRepository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel Class")
         }
-        throw IllegalArgumentException("Unknown ViewModel Class")
     }
 }

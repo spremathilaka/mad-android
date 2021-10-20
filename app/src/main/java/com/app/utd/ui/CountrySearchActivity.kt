@@ -4,10 +4,10 @@ import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.utd.R
@@ -17,16 +17,15 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
 
     private lateinit var activityBinding: ActivityCountrySearchBinding
 
-    private lateinit var viewModel: CountryViewModel
-
     private val dataAdapter: CountryListAdapter = CountryListAdapter()
 
-    private lateinit var viewModelFactory: CountryViewModelFactory
+    private val viewModel: CountryViewModel by viewModels {
+        CountryViewModel.Factory(CountryRepository())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        inject()
         activityBinding = DataBindingUtil.setContentView<ActivityCountrySearchBinding>(
             this,
             R.layout.activity_country_search
@@ -34,7 +33,6 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             lifecycleOwner = this@CountrySearchActivity
             viewModel = this@CountrySearchActivity.viewModel
         }
-
 
         setUpUi()
     }
@@ -61,12 +59,6 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
         return false
     }
 
-    private fun inject() {
-        val countryRepository = CountryRepository()
-        viewModelFactory = CountryViewModelFactory(countryRepository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(CountryViewModel::class.java)
-
-    }
 
     private fun setUpUi() {
 

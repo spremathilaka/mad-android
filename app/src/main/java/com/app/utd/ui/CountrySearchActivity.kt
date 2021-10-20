@@ -19,7 +19,7 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
 
     private lateinit var viewModel: CountryViewModel
 
-    private val dataAdapter: CountryAdapter = CountryAdapter()
+    private val dataAdapter: CountryListAdapter = CountryListAdapter()
 
     private lateinit var viewModelFactory: CountryViewModelFactory
 
@@ -56,7 +56,7 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        dataAdapter.filter.filter(newText)
+        //dataAdapter.filter.filter(newText)
         return false
     }
 

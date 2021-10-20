@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.app.utd.databinding.ItemCountryBinding
 
@@ -40,13 +41,14 @@ class CountryAdapter :
         holder.bind(filterCountryList[position])
     }
 
-    fun updateCountryList(list: List<Country>) {
+    fun updateCountryList(newList: List<Country>) {
         countryList.clear()
-        countryList.addAll(list)
+        countryList.addAll(newList)
 
         filterCountryList.clear()
-        filterCountryList.addAll(list)
+        filterCountryList.addAll(newList)
 
+        //TODO use Diff util call bakc here for performance issues
         notifyDataSetChanged()
     }
 

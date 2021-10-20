@@ -13,7 +13,7 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
     val viewState: LiveData<CountryContract.ViewState>
         get() = mutableViewState
 
-    val query = MutableStateFlow("")
+    private val query = MutableStateFlow("")
 
     fun getCountryList() {
         viewModelScope.launch {
@@ -23,7 +23,6 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
         }
 
     }
-
 
     private fun MutableLiveData<CountryContract.ViewState>.update(
         isLoading: Boolean = false,
@@ -41,7 +40,14 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
         viewModelScope.launch {
             query.debounce(300)
                 .filter { query ->
-                    return@filter query.isNotEmpty()
+                    if (query.isEmpty()) {
+                        withContext(Dispatchers.Main) {
+                            mutableViewState.update(isLoading = false, data = emptyList())
+                        }
+                        return@filter false
+                    } else {
+                        return@filter true
+                    }
                 }
                 .distinctUntilChanged()
                 .flatMapLatest { query ->

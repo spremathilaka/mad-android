@@ -17,7 +17,9 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
 
     private lateinit var activityBinding: ActivityCountrySearchBinding
 
-    private val dataAdapter: CountryListAdapter = CountryListAdapter()
+    private val dataAdapter: CountryListAdapter by lazy {
+        CountryListAdapter()
+    }
 
     private val viewModel: CountryViewModel by viewModels {
         CountryViewModel.Factory(CountryRepository())

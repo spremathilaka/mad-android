@@ -51,12 +51,13 @@ class CountrySearchActivity : AppCompatActivity(), SearchView.OnQueryTextListene
         return true
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
+    override fun onQueryTextSubmit(query: String): Boolean {
         return false
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
+    override fun onQueryTextChange(newText: String): Boolean {
         //dataAdapter.filter.filter(newText)
+        viewModel.filterCountry(newText)
         return false
     }
 

@@ -1,6 +1,8 @@
 package com.app.utd.ui
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CountryViewModel(private val countryRepository: CountryRepository) : ViewModel() {
@@ -9,6 +11,8 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
         MutableLiveData(CountryContract.ViewState())
     val viewState: LiveData<CountryContract.ViewState>
         get() = mutableViewState
+
+    val query = MutableStateFlow("")
 
     fun getCountryList() {
         viewModelScope.launch {
@@ -29,6 +33,27 @@ class CountryViewModel(private val countryRepository: CountryRepository) : ViewM
 
     }
 
+    fun filterCountry(searchTerm: String) {
+        query.value = searchTerm
+
+
+        viewModelScope.launch {
+            query.debounce(300)
+                .filter { query ->
+                    return@filter query.isNotEmpty()
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { query ->
+                    countryRepository.searchCountry(query).catch {
+                        emitAll(flowOf(emptyList()))
+                    }
+                }
+                .flowOn(Dispatchers.Default)
+                .collect { result ->
+                    mutableViewState.update(isLoading = false, data = result)
+                }
+        }
+    }
 }
 
 class CountryViewModelFactory(private val countryRepository: CountryRepository) :
